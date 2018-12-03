@@ -26,55 +26,61 @@ public class Minimax {
 		System.out.println("Waiting for opponent...");
 		
 		graph = new Graph();
-		//graph.createNode("XOXOXOXO-");
-		//graph.createNode("XOX---X-O");
-		graph.createNode(Main.board.state);
+		graph.createNode(Main.board.state); graph.setNodeValue(0, Integer.MIN_VALUE);
 		
-		//System.out.println(graph.getNodeStatebyId(0));
+		long startTime = System.nanoTime();
 		
-		search(0, true);
+		search(0, true, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		
-		//System.out.println(graph.getNodeValue(0));
+		long endTime = System.nanoTime();
+		long timeElapsed = endTime - startTime;
 		
 		Iterator<Integer> it; it = graph.nodes.get(0).neighbors.iterator();
-		int nextMove = -1;
-		String state = graph.getNodeStatebyId(0); 
+		Integer bestChild = null; Integer bestValue = Integer.MIN_VALUE;
 		while (it.hasNext()) {
 			int child = it.next();
-			if (graph.getNodeValue(child) == graph.getNodeValue(0)) {
-				String childState = graph.getNodeStatebyId(child);
-				//System.out.println(state + " " + childState);
-				for (int i=0;i<9;i++) {
-					if (state.charAt(i) != childState.charAt(i)) {
-						nextMove = i; break;
-					}
-				}
+			if (graph.getNodeValue(child) > bestValue) {
+				bestChild = child; bestValue = graph.getNodeValue(child);
 			}
+		}
+		int nextMove = -1;
+		String state = graph.getNodeStatebyId(0);
+		String childState = graph.getNodeStatebyId(bestChild);
+		for (int i=0;i<9;i++) {
+			if (state.charAt(i) != childState.charAt(i)) { nextMove = i; break; }
 		}
 		
 		if (nextMove >= 0) {
 			Main.board.setCell(nextMove, character);
 			Main.board.printBoard();
 			
+			if(timeElapsed/1000000 > 0) System.out.println("\n" + "search() time elapsed: " + timeElapsed/1000000 + " miliseconds");
+			else System.out.println("\n" + "search() time elapsed: " + timeElapsed + " nanoseconds");
+			
 			char status = Main.board.checkVictory();
 			if (status == '-') {
 				Main.player.execTurn();
+			} else if (status == 'X') {
+				System.out.println("Player X wins!");
 			} else if (status == 'O') {
 				System.out.println("Player O wins!");
 			} else if (status == 'T') {
 				System.out.println("Tie!");
 			}
 			
+		} else {
+			System.out.println("No next move possible. Please restart game.");
 		}
 		
 	}
 	
-	public void search(int v, boolean max) {
+	public int search(int v, boolean max, int a, int b) {
 		
 		String state = graph.getNodeStatebyId(v);
 		
 		if (isLeaf(v)) {
-			graph.setNodeValue(v, evaluateLeaf(v)); return;
+			graph.setNodeValue(v, evaluateLeaf(v));
+			return graph.getNodeValue(v);
 		}
 		
 		for (int i=0;i<9;i++) {
@@ -83,27 +89,28 @@ public class Minimax {
 				if (max) newstate = state.substring(0, i) + this.character + state.substring(i+1);
 				else newstate = state.substring(0, i) + Main.player.character + state.substring(i+1);
 				
-				int n = graph.createChild(v, newstate);
-				search(n, !max);				
+				int child = graph.createChild(v, newstate);
+				int childValue = search(child, !max, a, b);
+				
+				if (max) {
+					if (graph.getNodeValue(v) == null || childValue > graph.getNodeValue(v)) {
+						graph.setNodeValue(v, childValue);
+						if (graph.getNodeValue(v) > a) { a = graph.getNodeValue(v); }
+						if (a >= b) return a;
+					}
+				} else {
+					if (graph.getNodeValue(v) == null || childValue < graph.getNodeValue(v)) {
+						graph.setNodeValue(v, childValue);
+						if (graph.getNodeValue(v) < b) { b = graph.getNodeValue(v); }
+						if (a >= b) return b;
+					}
+				}
+								
 			}
 		}
 		
-		Iterator<Integer> it; it = graph.nodes.get(v).neighbors.iterator();
-		Integer bestValue;
-		if (max) bestValue = -1000;
-		else bestValue = 1000;
+		return graph.getNodeValue(v);
 		
-		while(it.hasNext()) {
-			int next = it.next();
-			if (max) {
-				bestValue = Math.max(bestValue, graph.getNodeValue(next));
-			} else {
-				bestValue = Math.min(bestValue, graph.getNodeValue(next));
-			}
-		}
-		
-		//System.out.println("Node " + v + " = " + bestValue);
-		graph.setNodeValue(v, bestValue);
 	}
 	
 	public boolean isLeaf(int v) {
@@ -113,15 +120,19 @@ public class Minimax {
 		
 		//checking for row victory
 		for (int i=0;i<9;i+=3) {
-			if (state.charAt(i) == state.charAt(i+1) && state.charAt(i+1) == state.charAt(i+2) && state.charAt(i) != '-') leaf = true;
+			if (state.charAt(i) == state.charAt(i+1) && state.charAt(i+1) == state.charAt(i+2) && state.charAt(i) != '-')
+				leaf = true;
 		}
 		//checking for column victory
 		for (int i=0;i<3;i++) {
-			if (state.charAt(i) == state.charAt(i+3) && state.charAt(i+3) == state.charAt(i+6) && state.charAt(i) != '-') leaf = true;
+			if (state.charAt(i) == state.charAt(i+3) && state.charAt(i+3) == state.charAt(i+6) && state.charAt(i) != '-')
+				leaf = true;
 		}
 		//checking for diagonals
-		if (state.charAt(0) == state.charAt(4) && state.charAt(4) == state.charAt(8) && state.charAt(0) != '-') leaf = true;
-		else if (state.charAt(2) == state.charAt(4) && state.charAt(4) == state.charAt(6) && state.charAt(2) != '-') leaf = true;
+		if (state.charAt(0) == state.charAt(4) && state.charAt(4) == state.charAt(8) && state.charAt(0) != '-')
+			leaf = true;
+		else if (state.charAt(2) == state.charAt(4) && state.charAt(4) == state.charAt(6) && state.charAt(2) != '-')
+			leaf = true;
 				
 		//checking for tie
 		boolean tie = true;
@@ -190,6 +201,8 @@ public class Minimax {
 			}
 		}
 		
+		if (value != 0) return value;
+		
 		//Rule 2: 1 empty + 2 claimed = 30
 		
 		//checking rows
@@ -243,12 +256,12 @@ public class Minimax {
 			if ((state.charAt(i) == state.charAt(i+1) && state.charAt(i+2) == this.character && state.charAt(i) == '-') ||
 					(state.charAt(i) == state.charAt(i+2) && state.charAt(i+1) == this.character && state.charAt(i) == '-') ||
 					(state.charAt(i+1) == state.charAt(i+2) && state.charAt(i) == this.character && state.charAt(i+1) == '-')) {
-				value += 30;
+				value += 5;
 			}
 			if ((state.charAt(i) == state.charAt(i+1) && state.charAt(i+2) == Main.player.character && state.charAt(i) == '-') ||
 					(state.charAt(i) == state.charAt(i+2) && state.charAt(i+1) == Main.player.character && state.charAt(i) == '-') ||
 					(state.charAt(i+1) == state.charAt(i+2) && state.charAt(i) == Main.player.character && state.charAt(i+1) == '-')) {
-				value -= 30;
+				value -= 5;
 			}
 		}
 		//checking columns
@@ -256,12 +269,12 @@ public class Minimax {
 			if ((state.charAt(i) == state.charAt(i+3) && state.charAt(i+6) == this.character && state.charAt(i) == '-') ||
 					(state.charAt(i) == state.charAt(i+6) && state.charAt(i+3) == this.character && state.charAt(i) == '-') ||
 					(state.charAt(i+3) == state.charAt(i+6) && state.charAt(i) == this.character && state.charAt(i+3) == '-')) {
-				value += 30;
+				value += 5;
 			}
 			if ((state.charAt(i) == state.charAt(i+3) && state.charAt(i+6) == Main.player.character && state.charAt(i) == '-') ||
 					(state.charAt(i) == state.charAt(i+6) && state.charAt(i+3) == Main.player.character && state.charAt(i) == '-') ||
 					(state.charAt(i+3) == state.charAt(i+6) && state.charAt(i) == Main.player.character && state.charAt(i+3) == '-')) {
-				value -= 30;
+				value -= 5;
 			}
 		}
 		//checking diagonals
@@ -271,7 +284,7 @@ public class Minimax {
 				(state.charAt(2) == state.charAt(4) && state.charAt(6) == this.character && state.charAt(2) == '-') ||
 				(state.charAt(2) == state.charAt(6) && state.charAt(4) == this.character && state.charAt(2) == '-') ||
 				(state.charAt(4) == state.charAt(6) && state.charAt(2) == this.character && state.charAt(4) == '-')) {
-			value += 30;
+			value += 5;
 		}
 		if ((state.charAt(0) == state.charAt(4) && state.charAt(8) == Main.player.character && state.charAt(0) == '-') ||
 				(state.charAt(0) == state.charAt(8) && state.charAt(4) == Main.player.character && state.charAt(0) == '-') ||
@@ -279,7 +292,7 @@ public class Minimax {
 				(state.charAt(2) == state.charAt(4) && state.charAt(6) == Main.player.character && state.charAt(2) == '-') ||
 				(state.charAt(2) == state.charAt(6) && state.charAt(4) == Main.player.character && state.charAt(2) == '-') ||
 				(state.charAt(4) == state.charAt(6) && state.charAt(2) == Main.player.character && state.charAt(4) == '-')) {
-			value -= 30;
+			value -= 5;
 		}
 		
 		

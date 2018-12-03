@@ -36,6 +36,8 @@ public class Player {
 			Main.minimax.execTurn();
 		} else if (status == 'X') {
 			System.out.println("Player X wins!");
+		} else if (status == 'O') {
+			System.out.println("Player O wins!");
 		} else if (status == 'T') {
 			System.out.println("Tie!");
 		}

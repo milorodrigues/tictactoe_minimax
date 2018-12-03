@@ -40,7 +40,7 @@ public class Graph {
 		return value;
 	}
 	
-	public int getNodeValue(int id) {
+	public Integer getNodeValue(int id) {
 		return nodes.get(id).getValue();
 	}
 	

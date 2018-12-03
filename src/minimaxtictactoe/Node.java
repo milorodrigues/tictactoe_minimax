@@ -6,13 +6,8 @@ public class Node {
 	
 	public int id;
 	public ArrayList<Integer> neighbors;
-	
 	public Integer parent = null;
-	
-	public int alpha;
-	public int beta;
 	private Integer value = null;
-	
 	private String state;
 	
 	public Node(int id, String state) {
