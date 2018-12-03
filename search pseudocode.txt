@@ -1,0 +1,28 @@
+search (node v, boolean max)
+	if v is leaf:
+		evaluate v
+		set value of v
+		return value of v
+
+	otherwise:
+		for each of v's children:
+			generate the child
+			child's value = search(child, !max)
+
+			if (max && child value > v value)
+				v value = child value
+				se (v value > alpha):
+					alpha = v value
+					if (alpha >= beta):
+						return alpha
+
+			else if (!max && child value < v value)
+				v value = child value
+				se (v value < beta):
+					beta = v value
+					if (alpha >= beta):
+						return beta
+
+		return value of v
+
+
