@@ -55,17 +55,17 @@ public class Minimax {
 			Main.board.printBoard();
 			
 			if(timeElapsed/1000000 > 0) System.out.println("\n" + "search() time elapsed: " + timeElapsed/1000000 + " miliseconds");
-			else System.out.println("\n" + "search() time elapsed: " + timeElapsed + " nanoseconds");
+			else System.out.println("search() time elapsed: " + timeElapsed + " nanoseconds");
 			
 			char status = Main.board.checkVictory();
 			if (status == '-') {
 				Main.player.execTurn();
 			} else if (status == 'X') {
-				System.out.println("Player X wins!");
+				System.out.println("\nPlayer X wins!");
 			} else if (status == 'O') {
-				System.out.println("Player O wins!");
+				System.out.println("\nPlayer O wins!");
 			} else if (status == 'T') {
-				System.out.println("Tie!");
+				System.out.println("\nTie!");
 			}
 			
 		} else {
