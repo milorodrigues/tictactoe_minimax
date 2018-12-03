@@ -2,13 +2,11 @@ package minimaxtictactoe;
 
 public class Player {
 	
-	public boolean begins;
 	public char character;
 	public int number;
 	public char numCh;
 	
 	public Player(boolean begins) {
-		this.begins = begins;
 		
 		if (begins) {
 			this.character = 'X'; this.number = 1;
@@ -20,6 +18,8 @@ public class Player {
 	
 	public void execTurn() {
 		
+		//Simples, só lê a célula na qual o jogador humano quer jogar e a preenche no tabuleiro
+		
 		System.out.print("\nIt's your turn. Pick a cell (numbered 1 to 9) to play: ");
 		
 		int cell = Main.scan.nextInt(); cell--;
@@ -30,6 +30,8 @@ public class Player {
 		
 		Main.board.setCell(cell, character);		
 		Main.board.printBoard();
+		
+		//Checa fim de jogo e termina a execução caso o jogo tenha acabado
 		
 		char status = Main.board.checkVictory();
 		if (status == '-') {

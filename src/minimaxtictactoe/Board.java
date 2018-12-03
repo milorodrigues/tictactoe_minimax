@@ -6,12 +6,15 @@ import java.util.Arrays;
 
 public class Board {
 	
+	//A configuração do tabuleiro é mantida no objeto como uma string.
+	//Na string, - denota uma célula vazia, X ou O denotam uma célula preenchida de acordo.
 	public String state = "---------";
-	//private int[] state = {2, 1, 2, 1, 2, 2, 1, 1, 1};
-	//private int[] state = {1, 0, 2, 1, 0, 1, 0, 2, 2}; //102101022
 	
 	public Board() {
 	}
+	
+	//Métodos utilitários para imprimir e atualizar o tabuleiro, conferir células individuais e checar se houve vitória.
+	//Os nomes dos métodos são autoexplicativos.
 	
 	public void printBoard() {
 		System.out.println();

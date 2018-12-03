@@ -14,12 +14,15 @@ public class Main {
 		
 		System.out.println("Welcome to Tic Tac Toe!"); 
 		
+		//Iniciar jogadores de acordo com o símbolo escolhido pelo humano.
+		//A classe Player é para o jogador humano, enquanto a classe Minimax contém os algoritmos necessários para o agente
 		boolean welcome = welcome();
 		player = new Player(welcome);
 		minimax = new Minimax(!welcome);
 		
 		board.printBoard();
 		
+		//As funções execTurn() de cada jogador se chamam uma à outra, então aqui basta chamar a primeira 
 		if (welcome) player.execTurn();
 		else minimax.execTurn();
 		

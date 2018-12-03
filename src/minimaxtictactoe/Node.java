@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class Node {
 	
+	//Classe e métodos utilitários para representar os nós de um grafo.
+	
 	public int id;
 	public ArrayList<Integer> neighbors;
 	public Integer parent = null;

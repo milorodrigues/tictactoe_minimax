@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 public class Graph {
 	
+	//Classe e métodos utilitários para criar e utilizar um grafo.
+	
 	public LinkedList<Node> nodes;
 	private int nextnode;
 	
